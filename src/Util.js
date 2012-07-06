@@ -50,7 +50,8 @@ VIE.Util = {
                         ((safe)? "]" : "");
             }
         }
-        throw new Error("No prefix found for URI '" + uri + "'!");
+	    return uri;
+//        throw new Error("No prefix found for URI '" + uri + "'!");
     },
 
 // ### VIE.Util.isCurie(curie, namespaces)
@@ -78,15 +79,15 @@ VIE.Util = {
 //     VIE.Util.isCurie(scurie, ns); // --> true
 //     VIE.Util.isCurie(text, ns);   // --> false
     isCurie : function (curie, namespaces) {
+        try {
+            VIE.Util.toUri(curie, namespaces);
+            return true;
+        } catch (e) {
+            return false;
+        }
         if (VIE.Util.isUri(curie)) {
             return false;
         } else {
-            try {
-                VIE.Util.toUri(curie, namespaces);
-                return true;
-            } catch (e) {
-                return false;
-            }
         }
     },
 
@@ -117,12 +118,12 @@ VIE.Util = {
         for (var prefix in namespaces.toObj()) {
             if (prefix !== "" && (curie.indexOf(prefix + ":") === 0 || curie.indexOf("[" + prefix + ":") === 0)) {
                 var pattern = new RegExp("^" + "\\[{0,1}" + prefix + delim);
-                return "<" + curie.replace(pattern, namespaces.get(prefix)).replace(/\]{0,1}$/, '') + ">";
+                return curie.replace(pattern, namespaces.get(prefix)).replace(/\]{0,1}$/, '');
             }
         }
         /* check for the default namespace */
         if (curie.indexOf(delim) === -1) {
-            return "<" + namespaces.base() + curie + ">";
+            return namespaces.base() + curie;
         }
         throw new Error("No prefix found for CURIE '" + curie + "'!");
     },
@@ -142,7 +143,7 @@ VIE.Util = {
 //     VIE.Util.isUri(uri);   // --> true
 //     VIE.Util.isUri(curie); // --> false
     isUri : function (something) {
-        return (typeof something === "string" && something.search(/^<.+>$/) === 0);
+        return (typeof something === "string" && something.search(/^.+$/) === 0);
     },
 
 // ### VIE.Util.mapAttributeNS(attr, ns)
@@ -167,9 +168,9 @@ VIE.Util = {
             a = ns.uri(attr);
         } else if (!ns.isUri(attr)) {
             if (attr.indexOf(":") === -1) {
-                a = '<' + ns.base() + attr + '>';
+                a =  ns.base() + attr;
             } else {
-                a = '<' + attr + '>';
+                a =  attr ;
             }
         }
         return a;
@@ -388,12 +389,12 @@ VIE.Util = {
         var jsonLD = [];
         _.forEach(results, function(value, key) {
             var entity = {};
-            entity['@subject'] = '<' + key + '>';
+            entity['@subject'] =  key ;
             _.forEach(value, function(triples, predicate) {
-                predicate = '<' + predicate + '>';
+                //predicate = '<' + predicate;
                 _.forEach(triples, function(triple) {
                     if (triple.type === 'uri') {
-                        triple.value = '<' + triple.value + '>';
+                        triple.value = triple.value;
                     }
 
                     if (entity[predicate] && !_.isArray(entity[predicate])) {
@@ -431,7 +432,7 @@ VIE.Util = {
         if (!SchemaOrg) {
             throw new Error("Please load the schema.json file.");
         }
-        vie.types.remove("<http://schema.org/Thing>");
+        vie.types.remove("http://schema.org/Thing");
         
         var baseNSBefore = (baseNS)? baseNS : vie.namespaces.base();
         vie.namespaces.base(baseNS);
@@ -613,11 +614,11 @@ VIE.Util = {
                          return [
                              jQuery.rdf.triple(this.subject.toString(),
                                  'a',
-                                 '<' + ns.base() + 'Person>', {
+                                  ns.base() + 'Person', {
                                      namespaces: ns.toObj()
                                  }),
                              jQuery.rdf.triple(this.subject.toString(),
-                                 '<' + ns.base() + 'name>',
+                                 ns.base() + 'name',
                                  this.label, {
                                      namespaces: ns.toObj()
                                  })
@@ -636,11 +637,11 @@ VIE.Util = {
                           return [
                               jQuery.rdf.triple(this.subject.toString(),
                                   'a',
-                                  '<' + ns.base() + 'Person>', {
+                                   ns.base() + 'Person', {
                                       namespaces: ns.toObj()
                                   }),
                               jQuery.rdf.triple(this.subject.toString(),
-                                  '<' + ns.base() + 'name>',
+                                  ns.base() + 'name',
                                   this.label, {
                                       namespaces: ns.toObj()
                                   })
@@ -659,11 +660,11 @@ VIE.Util = {
                           return [
                           jQuery.rdf.triple(this.subject.toString(),
                               'a',
-                              '<' + ns.base() + 'Place>', {
+                              ns.base() + 'Place', {
                                   namespaces: ns.toObj()
                               }),
                           jQuery.rdf.triple(this.subject.toString(),
-                                  '<' + ns.base() + 'name>',
+                                  ns.base() + 'name',
                               this.label.toString(), {
                                   namespaces: ns.toObj()
                               })
@@ -684,21 +685,21 @@ VIE.Util = {
                           return [
                           jQuery.rdf.triple(this.subject.toString(),
                               'a',
-                              '<' + ns.base() + 'City>', {
+                              ns.base() + 'City', {
                                   namespaces: ns.toObj()
                               }),
                           jQuery.rdf.triple(this.subject.toString(),
-                                  '<' + ns.base() + 'name>',
+                                   ns.base() + 'name',
                               this.label.toString(), {
                                   namespaces: ns.toObj()
                               }),
                           jQuery.rdf.triple(this.subject.toString(),
-                                  '<' + ns.base() + 'description>',
+                                  ns.base() + 'description',
                               this.abs.toString(), {
                                   namespaces: ns.toObj()
                               }),
                           jQuery.rdf.triple(this.subject.toString(),
-                                  '<' + ns.base() + 'containedIn>',
+                                  ns.base() + 'containedIn',
                               this.country.toString(), {
                                   namespaces: ns.toObj()
                               })
@@ -746,9 +747,9 @@ VIE.Util = {
 				'left' : [ '?subject a dbpedia:' + key, '?subject rdfs:label ?label' ],
 				'right' : function(ns) {
 					return function() {
-						return [ jQuery.rdf.triple(this.subject.toString(), 'a', '<' + ns.base() + mapping[key] + '>', {
+						return [ jQuery.rdf.triple(this.subject.toString(), 'a', ns.base() + mapping[key], {
 							namespaces : ns.toObj()
-						}), jQuery.rdf.triple(this.subject.toString(), '<' + ns.base() + 'name>', this.label.toString(), {
+						}), jQuery.rdf.triple(this.subject.toString(), ns.base() + 'name', this.label.toString(), {
 							namespaces : ns.toObj()
 						}) ];
 					};

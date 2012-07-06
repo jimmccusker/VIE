@@ -20,7 +20,7 @@ VIE.prototype.Collection = Backbone.Collection.extend({
                 id = id.replace("_:bnode", 'c');
                 return this._byCid[id];
             } else {
-                return this._byId["<" + id + ">"];
+                return this._byId[id];
             }
         } else {
             id = this.toReference(id);
@@ -104,7 +104,7 @@ VIE.prototype.Collection = Backbone.Collection.extend({
     },
 
     isReference: function(uri){
-        var matcher = new RegExp("^\\<([^\\>]*)\\>$");
+        var matcher = new RegExp("^([^\\>]*)$");
         if (matcher.exec(uri)) {
             return true;
         }
@@ -115,7 +115,7 @@ VIE.prototype.Collection = Backbone.Collection.extend({
         if (this.isReference(uri)) {
             return uri;
         }
-        return '<' + uri + '>';
+        return uri;
     },
         
     fromReference: function(uri){

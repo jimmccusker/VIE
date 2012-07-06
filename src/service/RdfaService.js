@@ -252,7 +252,7 @@ VIE.prototype.RdfaService.prototype = {
         if (jQuery(element).attr('typeof') !== this.options.attributeExistenceComparator) {
             type = jQuery(element).attr('typeof');
             if (type.indexOf("://") !== -1) {
-                return "<" + type + ">";
+                return type;
             } else {
                 return type;
             }
@@ -308,7 +308,7 @@ VIE.prototype.RdfaService.prototype = {
         if (subject.indexOf('<') === 0) {
             return subject;
         }
-        return "<" + subject + ">";
+        return subject;
     },
     
     setElementSubject : function(subject, element) {
@@ -416,13 +416,13 @@ VIE.prototype.RdfaService.prototype = {
         // RDF resource.
         var resource = element.attr('resource');
         if (resource) {
-            return ["<" + resource + ">"];
+            return [resource];
         }
                 
         // `href` attribute also links to another RDF resource.
         var href = element.attr('href');
         if (href && element.attr('rel') === predicate) {
-            return ["<" + href + ">"];
+            return [href];
         }
     
         // If the predicate is a relation, we look for identified child objects

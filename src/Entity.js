@@ -233,7 +233,7 @@ VIE.prototype.Entity = function(attrs, opts) {
         },
 
         isReference: function(uri){
-            var matcher = new RegExp("^\\<([^\\>]*)\\>$");
+            var matcher = new RegExp("^([^\\>]*)$");
             if (matcher.exec(uri)) {
                 return true;
             }
@@ -254,12 +254,12 @@ VIE.prototype.Entity = function(attrs, opts) {
             }
             else if (ns.isCurie(uri)) {
                 ret = ns.uri(uri);
-                if (ret === "<" + ns.base() + uri + ">") {
+                if (ret === ns.base() + uri) {
                     /* no base namespace extension with IDs */
-                    ret = '<' + uri + '>';
+                    ret = uri;
                 }
             } else if (!ns.isUri(uri)) {
-                ret = '<' + uri + '>';
+                ret = uri;
             }
             return ret;
         },
